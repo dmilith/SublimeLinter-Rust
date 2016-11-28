@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Extract info for SublimeLinter
+# by Daniel (dmilith) Dettlaff
+
+_default_path="/bin:/usr/bin:/usr/local/rust/bin:/usr/local/bin:${PATH:-"/Software/Rust/exports"}"
+_out_data="$(env \
+    PATH=${_default_path} \
+    cargo rustc --color=never -q -- \
+    -Aunused-imports \
+    -Arenamed-and-removed-lints \
+    -Aunknown-lints \
+    -Adead-code \
+    -Zno-trans \
+    --error-format=human 2>&1 \
+    | sed -e '1,2d' -e :a -e '$d;N;2,7ba' -e 'P;D' 2>/dev/null)"
+
+# Print it to stderr:
+printf '%s\n' "${_out_data}" 1>&2
